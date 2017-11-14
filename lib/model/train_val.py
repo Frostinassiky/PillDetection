@@ -127,8 +127,9 @@ class SolverWrapper(object):
       lr = tf.Variable(cfg.TRAIN.LEARNING_RATE, trainable=False)
       self.optimizer = tf.train.MomentumOptimizer(lr, cfg.TRAIN.MOMENTUM)
 
-      # Compute the gradients with regard to the loss
-      gvs = self.optimizer.compute_gradients(loss)
+      # Compute the gradients with regard to the loss, only for trainable varibles
+      var_list = [ var for var in tf.trainable_variables() if var.name[0:18]!="resnet_v1_50/block" ]
+      gvs = self.optimizer.compute_gradients(loss,var_list=var_list)
       # Double the gradient of the bias if set
       if cfg.TRAIN.DOUBLE_BIAS:
         final_gvs = []
